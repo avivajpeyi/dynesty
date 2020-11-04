@@ -28,7 +28,7 @@ except ImportError:
 
 from .results import Results, print_fn
 from .bounding import UnitCube
-from .sampling import sample_unif
+from .sampling import sample_unif, sample_rwalk
 
 __all__ = ["Sampler"]
 
@@ -336,12 +336,14 @@ class Sampler(object):
             if self._beyond_unit_bound(loglstar):
                 # Propose points using the provided sampling/bounding options.
                 point, axes = self.propose_point()
-                evolve_point = self.evolve_point
+                evolve_point = sample_rwalk
+                RWALK_CALLED = True
             else:
                 # Propose/evaluate points directly from the unit cube.
                 point = self.rstate.rand(self.npdim)
                 axes = np.identity(self.npdim)
                 evolve_point = sample_unif
+                RWALK_CALLED = False
             point_queue.append(point)
             axes_queue.append(axes)
             self.nqueue += 1
@@ -360,6 +362,10 @@ class Sampler(object):
             # Propose ("evolve") a new live point using the default `map`
             # function.
             self.queue = list(map(evolve_point, args))
+
+        if RWALK_CALLED:
+            self.queue = format_rwalk_return_list(self.queue)
+            self.nqueue = len(self.queue)
 
     def _get_point_value(self, loglstar):
         """Grab the first live point proposal in the queue."""
@@ -393,6 +399,7 @@ class Sampler(object):
             # with our proposal (sampling) method.
             if blob is not None and self.nqueue <= 0 and bcheck:
                 self.update_proposal(blob)
+                # TODO: Might need to be careful with blob editing
 
             # If we satisfy the log-likelihood constraint, we're done!
             if logl > loglstar:
@@ -409,7 +416,7 @@ class Sampler(object):
                 self.nbound += 1
                 nupdate += 1
                 self.since_update = -ncall  # ncall will be added back later
-
+        #TODO: return list of us, vs, logls
         return u, v, logl, ncall
 
     def add_live_points(self):
@@ -1007,3 +1014,24 @@ class Sampler(object):
         finally:
             if pbar is not None:
                 pbar.close()
+
+
+def format_rwalk_return_list(rwalk_return_list):
+    """Converts from List[Tuple[List]] --> List
+
+    Parameters
+    ----------
+    rwalk_return_list:
+    List[
+        Tuple(List[u], List[v], List[logl], List[nc], List[blob]), (one for each pool)
+        ]
+
+    Returns
+    -------
+    List[Tuple(u, v, logl, nc, blob)]
+
+    """
+    new_list = []
+    for point_list in rwalk_return_list:
+        new_list+= list(zip(point_list[0], point_list[1], point_list[2], point_list[3], point_list[4]))
+    return new_list

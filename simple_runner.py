@@ -43,11 +43,11 @@ def main():
         walks=10,
         outdir=outdir,
         label=label,
-        sample='mrwalk',
+        sample='rwalk_dynesty',
         check_point_delta_t=100000,
-        queue_size=10
+        queue_size=2
     )
-    corner.corner(result.posterior)
+    result.plot_corner(priors=priors,filename="test.png")
 
 
 if __name__ == '__main__':
