@@ -361,7 +361,7 @@ def sample_rstagger(args):
             drhat /= linalg.norm(drhat)
 
             # Scale based on dimensionality.
-            dr = drhat * rstate.rand() ** (1. / n)
+            dr = drhat * rstate.rand()**(1. / n)
 
             # Transform to proposal distribution.
             du = np.dot(axes, dr)
