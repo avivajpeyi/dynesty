@@ -416,7 +416,7 @@ class Sampler(object):
                 self.nbound += 1
                 nupdate += 1
                 self.since_update = -ncall  # ncall will be added back later
-        #TODO: return list of us, vs, logls
+
         return u, v, logl, ncall
 
     def add_live_points(self):

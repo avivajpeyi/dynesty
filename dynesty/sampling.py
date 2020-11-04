@@ -9,16 +9,21 @@ Functions for proposing new live points used by
 
 """
 
-from __future__ import (division, print_function)
+from __future__ import (print_function, division)
+from six.moves import range
 
-import math
+
 import warnings
+import math
 
 import numpy as np
 from numpy import linalg
 from six.moves import range
 
-from .utils import reflect, unitcheck
+
+from .utils import unitcheck, reflect
+
+
 
 __all__ = ["sample_unif", "sample_rwalk", "sample_rstagger",
            "sample_slice", "sample_rslice", "sample_hslice"]
@@ -194,7 +199,7 @@ def sample_rwalk(args):
             drhat /= linalg.norm(drhat)
 
             # Scale based on dimensionality.
-            dr = drhat * rstate.rand() ** (1. / n)
+            dr = drhat * rstate.rand()**(1./n)
 
             # Transform to proposal distribution.
             du = np.dot(axes, dr)
@@ -1019,7 +1024,7 @@ def sample_hslice(args):
                     h = np.dot(jac, h)  # apply Jacobian
                 nc += 1
             # Compute specular reflection off boundary.
-            vel_ref = vel - 2 * h * np.dot(vel, h) / linalg.norm(h) ** 2
+            vel_ref = vel - 2 * h * np.dot(vel, h) / linalg.norm(h)**2
             dotprod = np.dot(vel_ref, vel)
             dotprod /= linalg.norm(vel_ref) * linalg.norm(vel)
             # Check angle of reflection.
@@ -1157,7 +1162,7 @@ def sample_hslice(args):
                     h = np.dot(jac, h)  # apply Jacobian
                 nc += 1
             # Compute specular reflection off boundary.
-            vel_ref = vel - 2 * h * np.dot(vel, h) / linalg.norm(h) ** 2
+            vel_ref = vel - 2 * h * np.dot(vel, h) / linalg.norm(h)**2
             dotprod = np.dot(vel_ref, vel)
             dotprod /= linalg.norm(vel_ref) * linalg.norm(vel)
             # Check angle of reflection.
