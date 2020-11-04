@@ -12,17 +12,12 @@ Functions for proposing new live points used by
 from __future__ import (print_function, division)
 from six.moves import range
 
-
 import warnings
 import math
-
 import numpy as np
 from numpy import linalg
-from six.moves import range
-
 
 from .utils import unitcheck, reflect
-
 
 
 __all__ = ["sample_unif", "sample_rwalk", "sample_rstagger",
