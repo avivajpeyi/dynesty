@@ -336,7 +336,7 @@ class Sampler(object):
             if self._beyond_unit_bound(loglstar):
                 # Propose points using the provided sampling/bounding options.
                 point, axes = self.propose_point()
-                evolve_point = sample_rwalk
+                evolve_point = self.evolve_point
                 RWALK_CALLED = True
             else:
                 # Propose/evaluate points directly from the unit cube.
